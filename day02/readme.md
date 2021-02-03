@@ -64,6 +64,7 @@ app.use(bodyParser.json());
 const port = 3001;
 const omikujiRouter = require("./routes/omikuji.route");
 const jankenRouter = require("./routes/janken.route");
+// ↓追加
 const scrapingRouter = require("./routes/scraping.route");
 
 app.get("/", (req, res) => {
@@ -75,6 +76,7 @@ app.get("/", (req, res) => {
 
 app.use("/omikuji", (req, res) => omikujiRouter(req, res));
 app.use("/janken", (req, res) => jankenRouter(req, res));
+// ↓追加
 app.use("/scraping", (req, res) => scrapingRouter(req, res));
 
 app.listen(port, () => {
@@ -129,7 +131,7 @@ exports.getHtml = async (query) => {
 
 ### 動作確認
 
-下記コマンドで動作確認する．下記のようにレスポンスが返ってくれば OK．
+サーバを立ち上げ，下記コマンドで動作確認する．下記のようにレスポンスが返ってくれば OK．
 
 ```bash
 $ curl localhost:3001/scraping/gethtml?message=test
@@ -239,7 +241,7 @@ exports.getHtml = async (req, res, next) => {
 // ↓追加
 exports.getRecentContents = async (req, res, next) => {
   try {
-    const result = await ScrapingService.getContents({});
+    const result = await ScrapingService.getRecentContents({});
     return res.status(200).json({
       status: 200,
       result: result,
@@ -278,8 +280,8 @@ exports.getRecentContents = async (query) => {
     const url = "https://gigazine.net/";
     const response = await fetch(url);
     const html = await response.text();
-    const contentsElement = html.toString().match(/<h2><a(?: .+?)?>.*?<\/h2>/g);
-    const contentsArray = contentsElement
+    const contentElements = html.toString().match(/<h2><a(?: .+?)?>.*?<\/h2>/g);
+    const contentArray = contentElements
       .map((x) => {
         return {
           url: x.split(" ")[1].split("=")[1].split('"')[1],
@@ -287,7 +289,7 @@ exports.getRecentContents = async (query) => {
         };
       })
       .filter((x) => x.url && x.title);
-    return contentsArray;
+    return contentArray;
   } catch (e) {
     throw Error("Error while getting recent contents.");
   }
@@ -328,7 +330,7 @@ $ curl localhost:3001/scraping/get-recent-contents
 
 このような場合は，Node.js 上からブラウザを操作し，ページの状態を更新しなければならないため，別のアプローチでスクレイピングを行う必要がある．
 
-今回は Node.js のパッケージである`puppeteer`を用いて，ブラウザの操作を自動化する処理を実装する．
+今回は Node.js のパッケージである`puppeteer`を用いて，ブラウザの操作を自動化する処理を実装する．前項と同様に，`https://gigazine.net/`からニュースのタイトルと個別記事の URL を取得するが，3 ページ分を取得してみる（1 ページ 40 記事）．
 
 `puppeteer`は，ヘッドレスブラウザを内蔵しており，Node.js からブラウザを起動して，決められた操作を実行することができる．今回のようなスクレイピング以外にも，プロダクトの E2E テストなどにも利用可能だ．
 
@@ -458,7 +460,7 @@ exports.getManyContents = async (query) => {
     const options = {
       headless: false,
       devtools: true,
-      slowMo: 500,
+      // slowMo: 500,
       args: ["--no-sandbox"],
     };
 
