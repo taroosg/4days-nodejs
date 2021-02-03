@@ -379,9 +379,9 @@ $ npm start
 
 ```bash
 .
+├── app.js
 ├── controllers
 │   └── omikuji.controller.js
-├── app.js
 ├── node_modules
 ├── package.json
 ├── package-lock.json
@@ -533,10 +533,10 @@ $ curl localhost:3001/omikuji
 
 ```bash
 .
+├── app.js
 ├── controllers
 │   ├── janken.controller.js
 │   └── omikuji.controller.js
-├── app.js
 ├── node_modules
 ├── package.json
 ├── package-lock.json
