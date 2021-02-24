@@ -452,7 +452,7 @@ exports.updateTodoData = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { todo, deadline, done } = req.body;
-    if (!(id && todo && deadline && done)) {
+    if (!(id && todo && deadline && typeof done === "boolean")) {
       throw new Error("something is blank");
     }
     const result = await TodoService.updateTodoData({
