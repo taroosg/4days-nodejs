@@ -337,8 +337,9 @@ const getTodo = async () => {
 
 // 🔽 todoをHTML要素に変換する関数 🔽
 const createElements = async (todoData) => {
-  return todoData.map(
-    (x) => `
+  return todoData
+    .map(
+      (x) => `
         <li>
           <form name="${x.id}">
           <p>📝: <input type="text" name="todo" value="${x.data.todo}"></p>
@@ -358,7 +359,8 @@ const createElements = async (todoData) => {
           </form>
         </li>
       `
-  );
+    )
+    .join("");
 };
 
 // 最新データを取得して画面に表示する関数
